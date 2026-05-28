@@ -6,6 +6,7 @@ import {
 } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useState, type ReactNode } from "react";
+import { Toaster } from "sonner";
 
 import { isApiError } from "@/lib/api-error";
 
@@ -39,6 +40,12 @@ export function QueryProvider({ children }: QueryProviderProps) {
   return (
     <QueryClientProvider client={client}>
       {children}
+      <Toaster
+        position="top-right"
+        richColors
+        closeButton
+        duration={4000}
+      />
       {process.env.NODE_ENV !== "production" && (
         <ReactQueryDevtools initialIsOpen={false} />
       )}
