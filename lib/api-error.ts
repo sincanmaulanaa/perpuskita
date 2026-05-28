@@ -39,6 +39,22 @@ export function isApiError(value: unknown): value is ApiError {
   );
 }
 
+/**
+ * Map an unknown thrown value to a user-friendly Indonesian message.
+ * Returns the supplied fallback for non-network errors so messages
+ * stay non-technical at the call site.
+ */
+export function getFriendlyMessage(
+  err: unknown,
+  fallback: string,
+): string {
+  if (!isApiError(err)) return fallback;
+  if (err.status === 0) {
+    return "Koneksi bermasalah. Periksa jaringan Anda.";
+  }
+  return fallback;
+}
+
 function fromAxios(err: AxiosError<ApiErrorBody>): ApiError {
   const status = err.response?.status ?? 0;
   const data = err.response?.data;

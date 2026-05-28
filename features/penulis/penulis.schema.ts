@@ -9,8 +9,7 @@ export const penulisSchema = z.object({
   alamat_penulis: z
     .string()
     .trim()
-    .max(200, "Alamat maksimal 200 karakter.")
-    .default(""),
+    .max(200, "Alamat maksimal 200 karakter."),
   email_penulis: z
     .string()
     .trim()
@@ -19,8 +18,7 @@ export const penulisSchema = z.object({
   deskripsi: z
     .string()
     .trim()
-    .max(500, "Deskripsi maksimal 500 karakter.")
-    .default(""),
+    .max(500, "Deskripsi maksimal 500 karakter."),
 });
 
 export type PenulisFormValues = z.infer<typeof penulisSchema>;

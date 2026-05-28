@@ -9,8 +9,7 @@ export const jenisBukuSchema = z.object({
   deskripsi: z
     .string()
     .trim()
-    .max(500, "Deskripsi maksimal 500 karakter.")
-    .default(""),
+    .max(500, "Deskripsi maksimal 500 karakter."),
 });
 
 export type JenisBukuFormValues = z.infer<typeof jenisBukuSchema>;
