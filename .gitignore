@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# AI assistant files (kept local, not part of the project)
+.agents/
+skills-lock.json
+AGENTS.md
+CLAUDE.md
+
