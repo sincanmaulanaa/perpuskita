@@ -24,16 +24,15 @@ export function BukuTable() {
     return () => clearTimeout(handle);
   }, [search]);
 
-  const allItems = data?.data ?? [];
-
   const filtered = useMemo(() => {
-    if (!debouncedSearch) return allItems;
-    return allItems.filter(
+    const items = data?.data ?? [];
+    if (!debouncedSearch) return items;
+    return items.filter(
       (item) =>
         item.judul_buku.toLowerCase().includes(debouncedSearch) ||
         item.isbn.toLowerCase().includes(debouncedSearch),
     );
-  }, [allItems, debouncedSearch]);
+  }, [data?.data, debouncedSearch]);
 
   const totalItems = filtered.length;
   const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
