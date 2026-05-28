@@ -55,7 +55,7 @@ export function ConfirmDialog({
   return (
     <dialog
       ref={ref}
-      className="rounded-2xl border border-slate-200 bg-white p-0 shadow-xl backdrop:bg-slate-900/40"
+      className="m-auto rounded-2xl border border-slate-200 bg-white p-0 shadow-xl backdrop:bg-slate-900/40"
       onClick={(event) => {
         // Backdrop click: target is the dialog itself, not its children.
         if (event.target === ref.current && !isLoading) {

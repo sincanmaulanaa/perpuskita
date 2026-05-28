@@ -52,6 +52,11 @@ export function getFriendlyMessage(
   if (err.status === 0) {
     return "Koneksi bermasalah. Periksa jaringan Anda.";
   }
+  // Detect MySQL/GORM foreign-key constraint leaks coming through the
+  // backend so the UI never shows raw SQL errors to end users.
+  if (err.message?.toLowerCase().includes("foreign key")) {
+    return "Tidak bisa dihapus karena masih digunakan oleh data lain.";
+  }
   return fallback;
 }
 
