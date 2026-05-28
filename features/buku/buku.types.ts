@@ -22,3 +22,9 @@ export type BukuListResponse = {
   msg: string;
   data: Buku[] | null;
 };
+
+export type BukuDetailResponse = {
+  error: boolean;
+  msg: string;
+  data: Buku | null;
+};

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 import { useBukuList } from "./buku.queries";
@@ -139,12 +140,13 @@ function BukuRows({ items, startIndex }: BukuRowsProps) {
                 {startIndex + index + 1}
               </td>
               <td className="px-4 py-3">
-                <div
-                  className="font-medium text-slate-900"
+                <Link
+                  href={`/buku/${item.id_buku}`}
+                  className="font-medium text-slate-900 transition hover:text-slate-600 hover:underline"
                   title={item.judul_buku}
                 >
                   {item.judul_buku}
-                </div>
+                </Link>
               </td>
               <td className="px-4 py-3 font-mono text-xs text-slate-500 hidden md:table-cell">
                 {item.isbn}
