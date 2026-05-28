@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 
+import { BukuStatsCard } from "@/features/buku/buku-stats-card";
+
 export const metadata: Metadata = {
   title: "Beranda · Perpuskita",
   description: "Ringkasan koleksi dan aktivitas perpustakaan.",
@@ -17,8 +19,8 @@ export default function DashboardPage() {
         </p>
       </header>
 
-      <section className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500">
-        Menu pengelolaan koleksi, peminjaman, dan denda akan muncul di sini.
+      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <BukuStatsCard />
       </section>
     </div>
   );
