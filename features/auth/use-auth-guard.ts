@@ -1,9 +1,15 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 
 import { useAuthStore } from "./auth.store";
+
+const subscribeHydration = (callback: () => void) =>
+  useAuthStore.persist.onFinishHydration(callback);
+
+const getHydrated = () => useAuthStore.persist.hasHydrated();
+const getHydratedServer = () => false;
 
 /**
  * Wait for the persisted auth store to rehydrate, then redirect to
@@ -13,15 +19,11 @@ import { useAuthStore } from "./auth.store";
 export function useAuthGuard() {
   const router = useRouter();
   const token = useAuthStore((state) => state.token);
-  const [hasHydrated, setHasHydrated] = useState(false);
-
-  useEffect(() => {
-    setHasHydrated(useAuthStore.persist.hasHydrated());
-    const unsubscribe = useAuthStore.persist.onFinishHydration(() => {
-      setHasHydrated(true);
-    });
-    return unsubscribe;
-  }, []);
+  const hasHydrated = useSyncExternalStore(
+    subscribeHydration,
+    getHydrated,
+    getHydratedServer,
+  );
 
   useEffect(() => {
     if (hasHydrated && !token) {
