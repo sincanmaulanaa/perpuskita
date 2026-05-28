@@ -14,10 +14,10 @@ export default function LoginPage() {
         <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-xl shadow-slate-900/5">
           <header className="mb-8 flex flex-col gap-2 text-center">
             <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
-              Perpuskita
+              Selamat datang
             </h1>
             <p className="text-sm text-slate-500">
-              Masuk ke sistem informasi perpustakaan
+              Masuk untuk mengelola perpustakaan Anda.
             </p>
           </header>
 
@@ -25,7 +25,7 @@ export default function LoginPage() {
         </div>
 
         <p className="mt-6 text-center text-xs text-slate-500">
-          Akses panel pegawai. Hubungi administrator untuk akun baru.
+          Hanya untuk pegawai. Hubungi administrator untuk membuat akun baru.
         </p>
       </div>
     </main>
