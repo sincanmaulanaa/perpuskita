@@ -7,7 +7,7 @@ type PageProps = {
 };
 
 export const metadata: Metadata = {
-  title: "Ubah Jenis Buku · Perpuskita",
+  title: "Ubah Jenis Buku",
 };
 
 export default async function EditJenisBukuPage({ params }: PageProps) {

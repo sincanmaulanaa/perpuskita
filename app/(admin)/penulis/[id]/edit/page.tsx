@@ -7,7 +7,7 @@ type PageProps = {
 };
 
 export const metadata: Metadata = {
-  title: "Ubah Penulis · Perpuskita",
+  title: "Ubah Penulis",
 };
 
 export default async function EditPenulisPage({ params }: PageProps) {

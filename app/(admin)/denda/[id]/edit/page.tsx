@@ -7,7 +7,7 @@ type PageProps = {
 };
 
 export const metadata: Metadata = {
-  title: "Ubah Denda · Perpuskita",
+  title: "Ubah Denda",
 };
 
 export default async function EditDendaPage({ params }: PageProps) {

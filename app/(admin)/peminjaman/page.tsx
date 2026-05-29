@@ -5,7 +5,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { PeminjamanList } from "@/features/peminjaman/peminjaman-list";
 
 export const metadata: Metadata = {
-  title: "Peminjaman · Perpuskita",
+  title: "Peminjaman",
   description: "Catatan peminjaman buku oleh anggota.",
 };
 

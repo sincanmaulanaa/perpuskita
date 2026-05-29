@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { DashboardOverview } from "@/features/dashboard/dashboard-overview";
 
 export const metadata: Metadata = {
-  title: "Beranda · Perpuskita",
+  title: "Beranda",
   description: "Ringkasan koleksi dan aktivitas perpustakaan.",
 };
 

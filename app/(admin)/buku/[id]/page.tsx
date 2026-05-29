@@ -7,7 +7,7 @@ type PageProps = {
 };
 
 export const metadata: Metadata = {
-  title: "Detail Buku · Perpuskita",
+  title: "Detail Buku",
   description: "Informasi lengkap buku.",
 };
 

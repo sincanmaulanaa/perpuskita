@@ -5,7 +5,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { DendaList } from "@/features/denda/denda-list";
 
 export const metadata: Metadata = {
-  title: "Denda · Perpuskita",
+  title: "Denda",
   description: "Catatan denda keterlambatan pengembalian buku.",
 };
 

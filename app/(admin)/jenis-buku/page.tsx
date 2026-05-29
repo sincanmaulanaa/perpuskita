@@ -5,7 +5,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { JenisBukuList } from "@/features/jenis-buku/jenis-buku-list";
 
 export const metadata: Metadata = {
-  title: "Jenis Buku · Perpuskita",
+  title: "Jenis Buku",
   description: "Kelola kategori buku.",
 };
 

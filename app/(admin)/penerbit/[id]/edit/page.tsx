@@ -7,7 +7,7 @@ type PageProps = {
 };
 
 export const metadata: Metadata = {
-  title: "Ubah Penerbit · Perpuskita",
+  title: "Ubah Penerbit",
 };
 
 export default async function EditPenerbitPage({ params }: PageProps) {

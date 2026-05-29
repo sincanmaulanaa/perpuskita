@@ -5,7 +5,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { PenulisList } from "@/features/penulis/penulis-list";
 
 export const metadata: Metadata = {
-  title: "Penulis · Perpuskita",
+  title: "Penulis",
   description: "Kelola data penulis buku.",
 };
 

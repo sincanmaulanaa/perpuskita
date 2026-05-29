@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { LoginForm } from "@/features/auth/login-form";
 
 export const metadata: Metadata = {
-  title: "Masuk · Perpuskita",
+  title: "Masuk",
   description: "Masuk ke sistem informasi perpustakaan Perpuskita.",
 };
 

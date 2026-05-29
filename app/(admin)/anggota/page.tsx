@@ -4,7 +4,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { AnggotaList } from "@/features/anggota/anggota-list";
 
 export const metadata: Metadata = {
-  title: "Anggota · Perpuskita",
+  title: "Anggota",
   description: "Daftar anggota perpustakaan.",
 };
 

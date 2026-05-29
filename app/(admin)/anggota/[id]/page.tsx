@@ -7,7 +7,7 @@ type PageProps = {
 };
 
 export const metadata: Metadata = {
-  title: "Detail Anggota · Perpuskita",
+  title: "Detail Anggota",
 };
 
 export default async function AnggotaDetailPage({ params }: PageProps) {

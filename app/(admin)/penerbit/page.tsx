@@ -5,7 +5,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { PenerbitList } from "@/features/penerbit/penerbit-list";
 
 export const metadata: Metadata = {
-  title: "Penerbit · Perpuskita",
+  title: "Penerbit",
   description: "Kelola data penerbit buku.",
 };
 

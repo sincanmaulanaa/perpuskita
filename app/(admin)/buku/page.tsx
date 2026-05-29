@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { BukuTable } from "@/features/buku/buku-table";
 
 export const metadata: Metadata = {
-  title: "Buku · Perpuskita",
+  title: "Buku",
   description: "Kelola koleksi buku perpustakaan.",
 };
 
