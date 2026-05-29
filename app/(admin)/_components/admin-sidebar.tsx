@@ -43,6 +43,12 @@ const sections: NavSection[] = [
         available: true,
         icon: <BuildingIcon />,
       },
+      {
+        label: "Anggota",
+        href: "/anggota",
+        available: true,
+        icon: <UserIcon />,
+      },
     ],
   },
   {
@@ -184,6 +190,15 @@ function BuildingIcon() {
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} className="h-4 w-4" aria-hidden>
       <path strokeLinecap="round" strokeLinejoin="round" d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16M3 21h18" />
       <path strokeLinecap="round" d="M9 7h2m2 0h2M9 11h2m2 0h2M9 15h2m2 0h2" />
+    </svg>
+  );
+}
+
+function UserIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} className="h-4 w-4" aria-hidden>
+      <circle cx={12} cy={8} r={4} />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M4 21a8 8 0 0 1 16 0" />
     </svg>
   );
 }
