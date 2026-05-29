@@ -11,9 +11,7 @@ import { getFriendlyMessage } from "@/lib/api-error";
 
 import { useDeleteJenisBuku } from "./jenis-buku.mutations";
 import { useJenisBukuList } from "./jenis-buku.queries";
-import type { JenisBuku } from "./jenis-buku.types";
-
-export function JenisBukuList() {
+import type { JenisBuku } from "./jenis-buku.types";export function JenisBukuList() {
   const list = useJenisBukuList();
   const deleteMutation = useDeleteJenisBuku();
   const [pendingDelete, setPendingDelete] = useState<JenisBuku | null>(null);
@@ -40,7 +38,15 @@ export function JenisBukuList() {
         getId={(item) => item.id}
         getSearchTarget={(item) => `${item.jenis_buku} ${item.deskripsi}`}
         searchPlaceholder="Cari nama jenis atau deskripsi..."
-        emptyText="Belum ada jenis buku. Tambahkan yang pertama."
+        emptyText="Tambahkan kategori pertama untuk mulai mengelompokkan buku."
+        emptyAction={
+          <Link
+            href="/jenis-buku/baru"
+            className="inline-flex items-center justify-center rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-slate-800"
+          >
+            Tambah Jenis
+          </Link>
+        }
         isLoading={list.isLoading}
         isError={list.isError}
         isFetching={list.isFetching}

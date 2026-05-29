@@ -43,7 +43,15 @@ export function PeminjamanList() {
           `${item.nama_anggota ?? ""} ${item.jaminan} ${item.id_anggota}`
         }
         searchPlaceholder="Cari nama anggota atau jaminan..."
-        emptyText="Belum ada catatan peminjaman."
+        emptyText="Catatan peminjaman akan muncul di sini setelah dibuat."
+        emptyAction={
+          <Link
+            href="/peminjaman/baru"
+            className="inline-flex items-center justify-center rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-slate-800"
+          >
+            Tambah Peminjaman
+          </Link>
+        }
         isLoading={list.isLoading}
         isError={list.isError}
         isFetching={list.isFetching}

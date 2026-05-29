@@ -40,7 +40,15 @@ export function PenulisList() {
           `${item.penulis_buku} ${item.alamat} ${item.email_penulis}`
         }
         searchPlaceholder="Cari nama, alamat, atau email..."
-        emptyText="Belum ada penulis. Tambahkan yang pertama."
+        emptyText="Tambahkan penulis pertama agar bisa dihubungkan ke buku."
+        emptyAction={
+          <Link
+            href="/penulis/baru"
+            className="inline-flex items-center justify-center rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-slate-800"
+          >
+            Tambah Penulis
+          </Link>
+        }
         isLoading={list.isLoading}
         isError={list.isError}
         isFetching={list.isFetching}

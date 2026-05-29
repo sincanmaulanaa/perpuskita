@@ -40,7 +40,15 @@ export function DendaList() {
           `${item.nama_anggota ?? ""} ${item.id_anggota} ${item.jumlah_denda}`
         }
         searchPlaceholder="Cari nama anggota atau jumlah..."
-        emptyText="Belum ada catatan denda."
+        emptyText="Catatan denda akan muncul di sini setelah dibuat."
+        emptyAction={
+          <Link
+            href="/denda/baru"
+            className="inline-flex items-center justify-center rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-slate-800"
+          >
+            Tambah Denda
+          </Link>
+        }
         isLoading={list.isLoading}
         isError={list.isError}
         isFetching={list.isFetching}
