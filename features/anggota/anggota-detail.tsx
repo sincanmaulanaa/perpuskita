@@ -53,7 +53,7 @@ export function AnggotaDetail({ id }: AnggotaDetailProps) {
       <header className="flex flex-col gap-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:flex-row sm:items-center">
         <div
           aria-hidden
-          className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-slate-900 text-xl font-semibold text-white"
+          className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-brand-600 text-xl font-semibold text-white"
         >
           {initials}
         </div>

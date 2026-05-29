@@ -18,7 +18,7 @@ export default function JenisBukuPage() {
         action={
           <Link
             href="/jenis-buku/baru"
-            className="inline-flex items-center justify-center rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-slate-800"
+            className="inline-flex items-center justify-center rounded-lg bg-brand-600 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-brand-700"
           >
             Tambah Jenis
           </Link>

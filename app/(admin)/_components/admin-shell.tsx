@@ -114,7 +114,7 @@ function Brand() {
     <div className="flex h-16 items-center gap-3 border-b border-slate-200 px-5">
       <div
         aria-hidden
-        className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900 text-white"
+        className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-600 text-white"
       >
         <svg
           viewBox="0 0 24 24"

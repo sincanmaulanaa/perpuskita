@@ -50,7 +50,7 @@ export function ConfirmDialog({
   const confirmClasses =
     variant === "destructive"
       ? "bg-red-600 text-white hover:bg-red-500 disabled:bg-red-300"
-      : "bg-slate-900 text-white hover:bg-slate-800 disabled:bg-slate-400";
+      : "bg-brand-600 text-white hover:bg-brand-700 disabled:bg-brand-300";
 
   return (
     <dialog

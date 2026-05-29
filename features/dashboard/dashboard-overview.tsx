@@ -59,6 +59,7 @@ export function DashboardOverview() {
           hint="Buku terdaftar dalam koleksi."
           icon={<BookIcon />}
           href="/buku"
+          tone="brand"
           isLoading={bukuQuery.isLoading}
           isError={bukuQuery.isError}
         />
@@ -68,6 +69,7 @@ export function DashboardOverview() {
           hint="Anggota perpustakaan aktif."
           icon={<UserIcon />}
           href="/anggota"
+          tone="brand"
           isLoading={anggotaQuery.isLoading}
           isError={anggotaQuery.isError}
         />

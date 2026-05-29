@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-type StatCardTone = "default" | "success" | "warning" | "danger";
+type StatCardTone = "default" | "brand" | "success" | "warning" | "danger";
 
 type StatCardProps = {
   label: string;
@@ -16,6 +16,7 @@ type StatCardProps = {
 
 const toneClasses: Record<StatCardTone, string> = {
   default: "bg-slate-100 text-slate-600",
+  brand: "bg-brand-50 text-brand-600",
   success: "bg-emerald-50 text-emerald-600",
   warning: "bg-amber-50 text-amber-600",
   danger: "bg-red-50 text-red-600",
