@@ -24,6 +24,7 @@ type DataTableProps<T> = {
   onRetry?: () => void;
   searchPlaceholder?: string;
   emptyText?: string;
+  emptyAction?: ReactNode;
   rowAction?: (item: T) => ReactNode;
   pageSize?: number;
 };
@@ -39,6 +40,7 @@ export function DataTable<T>({
   onRetry,
   searchPlaceholder = "Cari...",
   emptyText = "Belum ada data.",
+  emptyAction,
   rowAction,
   pageSize = 10,
 }: DataTableProps<T>) {
@@ -82,7 +84,7 @@ export function DataTable<T>({
 
       <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
         {isLoading ? (
-          <SkeletonRows />
+          <TableSkeleton columns={columns} hasRowAction={Boolean(rowAction)} />
         ) : isError ? (
           <ErrorState onRetry={onRetry} />
         ) : totalItems === 0 ? (
@@ -90,6 +92,7 @@ export function DataTable<T>({
             isSearching={Boolean(debouncedSearch)}
             search={debouncedSearch}
             emptyText={emptyText}
+            emptyAction={emptyAction}
           />
         ) : (
           <>
@@ -281,23 +284,78 @@ function Pagination(props: PaginationProps) {
   );
 }
 
-function SkeletonRows() {
+type TableSkeletonProps<T> = {
+  columns: DataTableColumn<T>[];
+  hasRowAction: boolean;
+};
+
+function TableSkeleton<T>({ columns, hasRowAction }: TableSkeletonProps<T>) {
   return (
-    <div className="divide-y divide-slate-100">
-      <div className="bg-slate-50 px-4 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
-        Memuat data...
-      </div>
-      {Array.from({ length: 6 }).map((_, idx) => (
-        <div
-          key={idx}
-          className="flex items-center gap-4 px-4 py-3"
-          aria-hidden
-        >
-          <div className="h-4 w-8 animate-pulse rounded bg-slate-200" />
-          <div className="h-4 flex-1 animate-pulse rounded bg-slate-200" />
-          <div className="h-4 w-24 animate-pulse rounded bg-slate-200" />
-        </div>
-      ))}
+    <div className="overflow-x-auto" aria-busy="true" aria-live="polite">
+      <table className="min-w-full divide-y divide-slate-200 text-sm">
+        <thead className="bg-slate-50">
+          <tr>
+            <th scope="col" className="px-4 py-3 w-12 text-right">
+              <div className="ml-auto h-3 w-4 rounded bg-slate-200" />
+            </th>
+            {columns.map((column) => (
+              <th
+                key={column.id}
+                scope="col"
+                className={cn(
+                  "px-4 py-3",
+                  column.align === "right" && "text-right",
+                  hiddenBelowToClass(column.hiddenBelow),
+                )}
+              >
+                <div
+                  className={cn(
+                    "h-3 w-20 rounded bg-slate-200",
+                    column.align === "right" && "ml-auto",
+                  )}
+                />
+              </th>
+            ))}
+            {hasRowAction ? (
+              <th scope="col" className="px-4 py-3 w-20 text-right">
+                <div className="ml-auto h-3 w-12 rounded bg-slate-200" />
+              </th>
+            ) : null}
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-slate-100">
+          {Array.from({ length: 6 }).map((_, rowIdx) => (
+            <tr key={rowIdx} className="animate-pulse">
+              <td className="px-4 py-3 text-right">
+                <div className="ml-auto h-3 w-4 rounded bg-slate-200" />
+              </td>
+              {columns.map((column, colIdx) => (
+                <td
+                  key={column.id}
+                  className={cn(
+                    "px-4 py-3",
+                    column.align === "right" && "text-right",
+                    hiddenBelowToClass(column.hiddenBelow),
+                  )}
+                >
+                  <div
+                    className={cn(
+                      "h-3 rounded bg-slate-200",
+                      column.align === "right" && "ml-auto",
+                      colIdx === 0 ? "w-3/4" : "w-1/2",
+                    )}
+                  />
+                </td>
+              ))}
+              {hasRowAction ? (
+                <td className="px-4 py-3 text-right">
+                  <div className="ml-auto h-6 w-16 rounded bg-slate-200" />
+                </td>
+              ) : null}
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
@@ -305,14 +363,34 @@ function SkeletonRows() {
 function ErrorState({ onRetry }: { onRetry?: () => void }) {
   return (
     <div className="flex flex-col items-center gap-3 px-4 py-16 text-center">
-      <p className="text-sm text-slate-600">
-        Gagal memuat data. Silakan coba lagi.
-      </p>
+      <span
+        aria-hidden
+        className="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-50 text-red-600"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={1.6}
+          className="h-5 w-5"
+        >
+          <circle cx={12} cy={12} r={9} />
+          <path strokeLinecap="round" d="M12 8v5m0 3v.01" />
+        </svg>
+      </span>
+      <div>
+        <p className="text-sm font-medium text-slate-900">
+          Tidak bisa memuat data
+        </p>
+        <p className="mt-1 text-sm text-slate-500">
+          Periksa koneksi Anda dan coba lagi.
+        </p>
+      </div>
       {onRetry ? (
         <button
           type="button"
           onClick={onRetry}
-          className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+          className="mt-2 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
         >
           Coba lagi
         </button>
@@ -321,20 +399,64 @@ function ErrorState({ onRetry }: { onRetry?: () => void }) {
   );
 }
 
+type EmptyStateProps = {
+  isSearching: boolean;
+  search: string;
+  emptyText: string;
+  emptyAction?: ReactNode;
+};
+
 function EmptyState({
   isSearching,
   search,
   emptyText,
-}: {
-  isSearching: boolean;
-  search: string;
-  emptyText: string;
-}) {
+  emptyAction,
+}: EmptyStateProps) {
   return (
-    <div className="px-4 py-16 text-center text-sm text-slate-500">
-      {isSearching
-        ? `Tidak ditemukan data untuk "${search}".`
-        : emptyText}
+    <div className="flex flex-col items-center gap-4 px-4 py-16 text-center">
+      <span
+        aria-hidden
+        className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-400"
+      >
+        {isSearching ? (
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={1.6}
+            className="h-5 w-5"
+          >
+            <circle cx={11} cy={11} r={7} />
+            <path strokeLinecap="round" d="m20 20-3.5-3.5" />
+          </svg>
+        ) : (
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={1.5}
+            className="h-5 w-5"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M4 7h16l-2 12H6L4 7Z"
+            />
+            <path strokeLinecap="round" d="M9 7V5a3 3 0 0 1 6 0v2" />
+          </svg>
+        )}
+      </span>
+      <div className="max-w-sm">
+        <p className="text-sm font-medium text-slate-900">
+          {isSearching ? "Tidak ada hasil yang cocok" : "Belum ada data"}
+        </p>
+        <p className="mt-1 text-sm text-slate-500">
+          {isSearching
+            ? `Coba kata kunci lain selain "${search}".`
+            : emptyText}
+        </p>
+      </div>
+      {!isSearching && emptyAction ? <div>{emptyAction}</div> : null}
     </div>
   );
 }

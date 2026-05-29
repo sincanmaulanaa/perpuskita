@@ -44,7 +44,9 @@ export function QueryProvider({ children }: QueryProviderProps) {
         position="top-right"
         richColors
         closeButton
-        duration={4000}
+        expand
+        duration={5000}
+        gap={10}
       />
       {process.env.NODE_ENV !== "production" && (
         <ReactQueryDevtools initialIsOpen={false} />
