@@ -63,7 +63,7 @@ const sections: NavSection[] = [
       {
         label: "Denda",
         href: "/denda",
-        available: false,
+        available: true,
         icon: <ReceiptIcon />,
       },
     ],
