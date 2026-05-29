@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { BukuStatsCard } from "@/features/buku/buku-stats-card";
+import { DashboardOverview } from "@/features/dashboard/dashboard-overview";
 
 export const metadata: Metadata = {
   title: "Beranda · Perpuskita",
@@ -19,9 +19,7 @@ export default function DashboardPage() {
         </p>
       </header>
 
-      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <BukuStatsCard />
-      </section>
+      <DashboardOverview />
     </div>
   );
 }
