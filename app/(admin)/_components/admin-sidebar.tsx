@@ -57,7 +57,7 @@ const sections: NavSection[] = [
       {
         label: "Peminjaman",
         href: "/peminjaman",
-        available: false,
+        available: true,
         icon: <CalendarIcon />,
       },
       {
