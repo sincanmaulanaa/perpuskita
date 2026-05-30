@@ -2,7 +2,6 @@
 
 Sistem informasi perpustakaan modern berbasis Next.js. Memberi pegawai tampilan kaya untuk mengelola koleksi buku, anggota, peminjaman, dan denda di atas REST API yang sudah ada.
 
-**Ringkasan dalam satu kalimat**: Frontend Next.js 16 dengan separasi state yang tegas (TanStack Query untuk server, Zustand untuk client, React Hook Form untuk form), folder per fitur yang konsisten, UI primitives reusable, dan copy bahasa Indonesia natural — di atas REST API yang sudah ada dengan defensive integration terhadap quirk-nya.
 
 ---
 
@@ -35,11 +34,9 @@ Sistem informasi perpustakaan modern berbasis Next.js. Memberi pegawai tampilan 
 
 Server data tidak pernah disimpan di Zustand. Form values tidak pernah dimirror ke global store. Setiap state ada di tempatnya sendiri.
 
-**2. Feature-folder, bukan technical-layer folder.** Kode dikelompokkan per domain entitas, bukan per tipe teknis (controllers/, services/, models/). Setiap folder `features/<entity>/` self-contained dan punya semua yang dibutuhkan: types, api calls, query hooks, mutation hooks, schema validasi, dan komponen UI. Konsekuensinya: nambah fitur baru = bikin satu folder dengan template yang konsisten.
+**1. Feature-folder, bukan technical-layer folder.** Kode dikelompokkan per domain entitas, bukan per tipe teknis (controllers/, services/, models/). Setiap folder `features/<entity>/` self-contained dan punya semua yang dibutuhkan: types, api calls, query hooks, mutation hooks, schema validasi, dan komponen UI. Konsekuensinya: nambah fitur baru = bikin satu folder dengan template yang konsisten.
 
-**3. Defensive frontend.** Backend punya beberapa quirk (foreign key constraint error mentah, response key tidak konsisten, validation message bocor SQL). Frontend tidak menebak-nebak: kontrak respons di-type secara tolerant, error backend di-mapping ke pesan ramah, dan setiap endpoint diuji dengan curl sebelum integrasi.
-
-**4. Copywriting dalam Bahasa Indonesia natural.** Semua teks user-facing — label, button, error message, empty state — dalam Bahasa Indonesia tanpa jargon teknis. Tidak ada "submit", "endpoint", "validate", "loading...". Diganti dengan "kirim", "tampilkan", "cek", "memuat...".
+**2. Defensive frontend.** Backend punya beberapa quirk (foreign key constraint error mentah, response key tidak konsisten, validation message bocor SQL). Frontend tidak menebak-nebak: kontrak respons di-type secara tolerant, error backend di-mapping ke pesan ramah, dan setiap endpoint diuji dengan curl sebelum integrasi.
 
 ### Alur Kerja per Fitur Baru
 
@@ -213,14 +210,6 @@ Timestamps (muted)
 - Web manifest dengan brand color `#3475E9` dan nama konsisten
 - Apple Web App tags (capable + status-bar style)
 
-### Backend Integration (sebagai dependency)
-
-- **Go (Fiber)** REST API di port 8001 dengan arsitektur hexagonal
-- JWT auth (HS256), argon2id password hashing
-- 7 modul: auth, buku (read-only), jenis_buku, penulis, penerbit, anggota, peminjaman, denda
-- Diperbaiki bug GORM (foreign key tag, BukuDetail relasi) selama integrasi
-
----
 
 ## Alur Data End-to-End
 
@@ -264,15 +253,15 @@ router.push('/jenis-buku') → user kembali ke list dengan data baru
 ## Fitur
 
 **Modul Master Data** — semua dengan list, detail, create, update, delete:
-- 📚 Buku (read-only — endpoint create belum tersedia di backend)
-- 🏷️ Jenis Buku
-- ✍️ Penulis
-- 🏢 Penerbit
-- 👥 Anggota (read-only)
+- Buku (read-only — endpoint create belum tersedia di backend)
+- Jenis Buku
+- Penulis
+- Penerbit
+- Anggota (read-only)
 
 **Modul Transaksi** — full CRUD:
-- 📅 Peminjaman dengan combobox pencarian anggota, badge status (aktif / lewat batas), dan halaman detail yang menampilkan daftar buku yang dipinjam
-- 🧾 Denda dengan form yang otomatis mengisi data peminjaman saat dipilih, format Rupiah, dan kalkulasi hari telat
+- Peminjaman dengan combobox pencarian anggota, badge status (aktif / lewat batas), dan halaman detail yang menampilkan daftar buku yang dipinjam
+- Denda dengan form yang otomatis mengisi data peminjaman saat dipilih, format Rupiah, dan kalkulasi hari telat
 
 **Beranda (Dashboard)**
 - 4 kartu statistik (Total Buku, Total Anggota, Peminjaman Aktif, Lewat Batas)
@@ -409,17 +398,4 @@ Login dengan akun seed:
 
 ---
 
-## Catatan Backend
 
-Beberapa keterbatasan backend yang ditangani di frontend:
-
-- Backend membalas `500` dengan SQL error mentah saat constraint foreign key ditolak. Frontend mendeteksi pesan `"foreign key constraint"` lalu menampilkan pesan ramah: *"Tidak bisa dihapus karena masih digunakan oleh data lain."*
-- Backend tidak punya endpoint create/update/delete untuk entitas `buku`, sehingga halaman buku bersifat read-only.
-- Beberapa endpoint membalas dengan key `status` alih-alih `msg`. Tipe response dibuat tolerant.
-- Bug GORM (typo `IDpeminjaman` vs `IDPeminjaman`, BukuDetail sebagai slice padahal belongs-to) diperbaiki di backend agar endpoint peminjaman & denda berfungsi.
-
----
-
-## Lisensi
-
-Project pribadi untuk keperluan portofolio.
