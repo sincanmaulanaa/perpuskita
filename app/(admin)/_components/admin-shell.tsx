@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import { toast } from "sonner";
@@ -111,33 +112,15 @@ export function AdminShell({ children }: AdminShellProps) {
 
 function Brand() {
   return (
-    <div className="flex h-16 items-center gap-3 border-b border-slate-200 px-5">
-      <div
-        aria-hidden
-        className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-600 text-white"
-      >
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={1.8}
-          className="h-5 w-5"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M4 6.5v12a1 1 0 0 0 1 1h6V5H6.5A2.5 2.5 0 0 0 4 6.5Z"
-          />
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M20 6.5v12a1 1 0 0 1-1 1h-6V5h4.5A2.5 2.5 0 0 1 20 6.5Z"
-          />
-        </svg>
-      </div>
-      <span className="text-base font-semibold tracking-tight text-slate-900">
-        Perpuskita
-      </span>
+    <div className="flex h-16 items-center border-b border-slate-200 px-5">
+      <Image
+        src="/logo/perpuskita-logo.png"
+        alt="Perpuskita"
+        width={600}
+        height={394}
+        priority
+        className="h-9 w-auto"
+      />
     </div>
   );
 }
