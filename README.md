@@ -7,6 +7,7 @@ Sistem informasi perpustakaan modern berbasis Next.js. Memberi pegawai tampilan 
 
 ## Daftar Isi
 
+- [Cuplikan Layar](#cuplikan-layar)
 - [Pendekatan Implementasi](#pendekatan-implementasi)
 - [Struktur Halaman](#struktur-halaman)
 - [Teknologi yang Digunakan](#teknologi-yang-digunakan)
@@ -17,6 +18,62 @@ Sistem informasi perpustakaan modern berbasis Next.js. Memberi pegawai tampilan 
 - [Scripts](#scripts)
 - [Konvensi](#konvensi)
 - [Catatan Backend](#catatan-backend)
+
+---
+
+## Cuplikan Layar
+
+### Otentikasi & Beranda
+
+**Halaman Masuk** — form login dengan logo brand, validasi inline, dan toggle show/hide kata sandi.
+
+![Halaman Login](./screenshots/screenshot-login-page.png)
+
+**Beranda** — empat kartu statistik (Total Buku, Total Anggota, Peminjaman Aktif, Lewat Batas), daftar lima peminjaman paling lama lewat batas, dan akumulasi total denda.
+
+![Beranda / Dashboard](./screenshots/screenshot-beranda-page.png)
+
+### Master Data
+
+**Buku** — daftar koleksi dengan pencarian dan paginasi 10 baris per halaman (read-only).
+
+![Daftar Buku](./screenshots/screenshot-buku-page.png)
+
+**Jenis Buku** — CRUD lengkap dengan aksi edit dan hapus per baris.
+
+![Daftar Jenis Buku](./screenshots/screenshot-jenis-buku-page.png)
+
+**Penulis** — daftar penulis dengan informasi alamat dan email.
+
+![Daftar Penulis](./screenshots/screenshot-penulis-page.png)
+
+**Penerbit** — daftar penerbit dengan informasi kontak.
+
+![Daftar Penerbit](./screenshots/screenshot-penerbit-page.png)
+
+**Anggota** — daftar anggota perpustakaan terdaftar (read-only).
+
+![Daftar Anggota](./screenshots/screenshot-anggota-page.png)
+
+### Transaksi
+
+**Peminjaman** — badge status lewat batas (merah) / aktif (hijau), jumlah buku per peminjaman, dan tombol aksi edit/hapus.
+
+![Daftar Peminjaman](./screenshots/screenshot-peminjaman-page.png)
+
+**Denda** — format Rupiah dengan locale Indonesia dan kalkulasi hari telat otomatis dari tanggal harus kembali ke tanggal kembali aktual.
+
+![Daftar Denda](./screenshots/screenshot-denda-page.png)
+
+### Interaksi
+
+**Form Tambah** — contoh halaman pembuatan jenis buku dengan validasi Zod, label & placeholder yang ramah, serta tombol Batal kembali ke daftar.
+
+![Form Tambah Jenis Buku](./screenshots/screenshot-contoh-create-new-page-jenis-buku.png)
+
+**Dialog Konfirmasi Hapus** — modal dialog (native `<dialog>`) dengan deskripsi data yang akan dihapus dan tombol destruktif berwarna merah.
+
+![Dialog Hapus Jenis Buku](./screenshots/screenshot-contoh-dialog-hapus-jenis-buku.png)
 
 ---
 
