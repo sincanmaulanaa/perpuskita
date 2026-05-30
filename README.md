@@ -2,16 +2,264 @@
 
 Sistem informasi perpustakaan modern berbasis Next.js. Memberi pegawai tampilan kaya untuk mengelola koleksi buku, anggota, peminjaman, dan denda di atas REST API yang sudah ada.
 
-## Tech Stack
+**Ringkasan dalam satu kalimat**: Frontend Next.js 16 dengan separasi state yang tegas (TanStack Query untuk server, Zustand untuk client, React Hook Form untuk form), folder per fitur yang konsisten, UI primitives reusable, dan copy bahasa Indonesia natural — di atas REST API yang sudah ada dengan defensive integration terhadap quirk-nya.
 
-- **Framework**: [Next.js 16](https://nextjs.org/) (App Router) dengan React 19 & TypeScript
-- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) dengan `@theme` untuk skala warna brand kustom
-- **Data fetching**: [Axios](https://axios-http.com/) + [TanStack Query](https://tanstack.com/query) (cache, retry, invalidation)
-- **State management**: [Zustand](https://github.com/pmndrs/zustand) (auth session, UI state lintas-komponen)
-- **Form**: [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/) untuk validasi yang type-safe
-- **Notifikasi**: [Sonner](https://sonner.emilkowal.ski/)
-- **Font**: [Poppins](https://fonts.google.com/specimen/Poppins) via `next/font`
-- **Package manager**: [Bun](https://bun.sh/)
+---
+
+## Daftar Isi
+
+- [Pendekatan Implementasi](#pendekatan-implementasi)
+- [Struktur Halaman](#struktur-halaman)
+- [Teknologi yang Digunakan](#teknologi-yang-digunakan)
+- [Alur Data End-to-End](#alur-data-end-to-end)
+- [Fitur](#fitur)
+- [Struktur Proyek](#struktur-proyek)
+- [Setup](#setup)
+- [Scripts](#scripts)
+- [Konvensi](#konvensi)
+- [Catatan Backend](#catatan-backend)
+
+---
+
+## Pendekatan Implementasi
+
+### Prinsip yang Dipegang
+
+**1. Pemisahan kepentingan yang tegas.** Tiga jenis state diperlakukan berbeda dan tidak pernah dicampur:
+
+| Jenis state | Tools | Contoh |
+|---|---|---|
+| Server state (data dari backend) | TanStack Query | Daftar buku, detail peminjaman, list anggota |
+| Client state (cross-component, persisted) | Zustand | Token JWT, username, sidebar drawer |
+| Form state (lokal, sementara) | React Hook Form | Input field, validasi, dirty/touched flags |
+
+Server data tidak pernah disimpan di Zustand. Form values tidak pernah dimirror ke global store. Setiap state ada di tempatnya sendiri.
+
+**2. Feature-folder, bukan technical-layer folder.** Kode dikelompokkan per domain entitas, bukan per tipe teknis (controllers/, services/, models/). Setiap folder `features/<entity>/` self-contained dan punya semua yang dibutuhkan: types, api calls, query hooks, mutation hooks, schema validasi, dan komponen UI. Konsekuensinya: nambah fitur baru = bikin satu folder dengan template yang konsisten.
+
+**3. Defensive frontend.** Backend punya beberapa quirk (foreign key constraint error mentah, response key tidak konsisten, validation message bocor SQL). Frontend tidak menebak-nebak: kontrak respons di-type secara tolerant, error backend di-mapping ke pesan ramah, dan setiap endpoint diuji dengan curl sebelum integrasi.
+
+**4. Copywriting dalam Bahasa Indonesia natural.** Semua teks user-facing — label, button, error message, empty state — dalam Bahasa Indonesia tanpa jargon teknis. Tidak ada "submit", "endpoint", "validate", "loading...". Diganti dengan "kirim", "tampilkan", "cek", "memuat...".
+
+### Alur Kerja per Fitur Baru
+
+Setiap kali nambah modul CRUD, ikuti pola yang sudah konsisten:
+
+1. Verifikasi kontrak backend dengan curl
+2. Tulis DTO types di `features/<entity>/<entity>.types.ts`
+3. Tulis `api.ts` (axios calls) → `queries.ts` (hooks) → `mutations.ts` (mutate hooks)
+4. Tulis Zod schema di `<entity>.schema.ts`
+5. Tulis `<entity>-form.tsx` (dipakai create + edit)
+6. Tulis `<entity>-list.tsx` pakai komponen `DataTable` generic
+7. Tambah 4 route Next.js: list, baru, [id], [id]/edit
+8. Tambah menu item di sidebar
+9. Verifikasi build, lint, dan smoke-test manual
+10. Commit dengan Conventional Commits, push
+
+### Keputusan Arsitektur Penting
+
+- **Same-origin API via Next.js rewrites**: Browser hit `/api/v1/*`, Next.js proxy ke `localhost:8001`. Hindari CORS di dev, lebih clean untuk produksi.
+- **JWT di sessionStorage** (Zustand persist), bukan localStorage. Lebih pendek umur token, ada konsekuensi XSS yang sama. Untuk hardening produksi, pindah ke HttpOnly cookies.
+- **Auth guard via Zustand hydration**: hook `useAuthGuard` pakai `useSyncExternalStore` untuk subscribe ke status hydration. Tidak ada flash of unauthenticated content sebelum redirect.
+- **Native `<dialog>` element** untuk confirm modal. Browser handle Esc, focus trap, backdrop styling. Tidak butuh library modal.
+- **DataTable generic over T**: satu komponen reusable untuk semua tabel CRUD. Search debounced, pagination client-side, kolom responsive (hide bertahap di breakpoint).
+
+---
+
+## Struktur Halaman
+
+### Hirarki Routes
+
+```
+/                           Beranda (dashboard)
+/login                      Halaman login (publik)
+
+/buku                       List buku + search + pagination
+/buku/[id]                  Detail buku dengan resolusi nama jenis/penulis/penerbit
+
+/jenis-buku                 List + Tambah button
+/jenis-buku/baru            Form create
+/jenis-buku/[id]/edit       Form edit (prefilled)
+
+/penulis                    List/baru/edit (pola sama)
+/penerbit                   List/baru/edit
+/anggota                    List (read-only)
+/anggota/[id]               Detail anggota dengan kontak + identitas
+
+/peminjaman                 List dengan badge status, jumlah_buku, search
+/peminjaman/baru            Form dengan AnggotaSelect combobox
+/peminjaman/[id]            Detail dengan card anggota + list buku dipinjam
+/peminjaman/[id]/edit       Form edit (prefilled)
+
+/denda                      List dengan format Rupiah, hari telat
+/denda/baru                 Form dengan PeminjamanSelect (auto-fill 4 field)
+/denda/[id]/edit            Form edit (prefilled)
+```
+
+### Layout & Komposisi
+
+```
+RootLayout (app/layout.tsx)
+├── <html> dengan Poppins font + favicon metadata
+├── <QueryProvider> (TanStack QueryClient + Toaster)
+└── children
+    │
+    ├── /login              Tidak masuk admin shell, layout sendiri
+    │
+    └── (admin)/            Route group, semua protected
+        └── AdminLayout     Wrap dengan AdminShell
+            └── AdminShell  (client component)
+                ├── useAuthGuard()  → redirect /login jika tidak auth
+                ├── Sidebar (md+) atau Drawer (mobile)
+                │   └── AdminSidebar
+                │       ├── Brand: logo image
+                │       └── 3 grup nav: Beranda · Master Data · Transaksi
+                ├── Header (sticky)
+                │   ├── Hamburger (mobile)
+                │   ├── "Halo, {username}"
+                │   └── Tombol Keluar
+                └── Main
+                    └── {children}        ← halaman dirender di sini
+```
+
+### Anatomi Halaman Tipikal
+
+**List page** (contoh `/peminjaman`):
+```
+PageHeader: title + description + action (Tambah X button)
+DataTable
+├── SearchBar (debounced 250ms)
+├── Loading: skeleton table dengan struktur asli
+├── Error: ikon + retry button
+├── Empty: ikon + pesan + CTA "Tambah X"
+└── Data: header + rows + pagination
+    └── Per row: kolom data + edit/delete action
+```
+
+**Form page** (contoh `/peminjaman/baru`):
+```
+PageHeader: title + description
+Form (max-w-2xl, card)
+├── Field 1: AnggotaSelect (combobox dengan backend search)
+├── Field 2-3: Tanggal Pinjam, Tanggal Harus Kembali (date inputs)
+├── Field 4: Jaminan (select dropdown)
+└── Footer: Batal (link) + Submit (button)
+```
+
+**Detail page** (contoh `/peminjaman/[id]`):
+```
+BackLink (← Kembali ke daftar)
+Header card: anggota name + status badge (Aktif/Lewat batas) + Edit button
+Grid 2-col:
+├── Card "Periode": tgl_pinjam, tgl_kembali, jaminan
+└── Card "Buku Dipinjam (N)": list buku dengan judul + ISBN + kondisi
+Timestamps (muted)
+```
+
+---
+
+## Teknologi yang Digunakan
+
+### Framework & Bahasa
+
+- **[Next.js 16](https://nextjs.org/)** (App Router) — file-based routing, server components by default, dynamic params via async `params: Promise<...>`
+- **React 19** — server components, transitions, automatic batching
+- **TypeScript 5** dengan strict mode — inference akhir jadi dokumentasi terbaik
+
+### Data & Network
+
+- **[Axios 1.16](https://axios-http.com/)** — HTTP client. Satu instance dengan interceptor request (attach JWT) dan response (normalize ke ApiError, clear session pada 401)
+- **[TanStack Query 5](https://tanstack.com/query)** — server state cache. Query keys hierarkis (`[entity, list]`, `[entity, detail, id]`), invalidation setelah mutation, retry kondisional
+- **TanStack Query Devtools** (dev only) — inspect cache di browser
+
+### State Management
+
+- **[Zustand 5](https://github.com/pmndrs/zustand)** dengan persist middleware — auth session di sessionStorage. Selector pattern untuk subscribe spesifik
+- **`useSyncExternalStore`** untuk membaca status hydration Zustand (lint-clean, React-native API)
+
+### Form & Validation
+
+- **[React Hook Form 7](https://react-hook-form.com/)** — uncontrolled inputs (performa lebih baik), validation pada submit, integrasi via `Controller` untuk komponen kustom (AnggotaSelect, PeminjamanSelect)
+- **[Zod 4](https://zod.dev/)** — schema validation. Pesan error dalam Bahasa Indonesia langsung di schema
+- **@hookform/resolvers** — bridging Zod ke React Hook Form
+
+### Styling
+
+- **[Tailwind CSS v4](https://tailwindcss.com/)** — atomic CSS, PostCSS-based, hot reload cepat
+- **`@theme` directive** — define custom tokens. Skala warna `brand-50` sampai `brand-950` di-generate dari `#3475E9`
+- **[Poppins](https://fonts.google.com/specimen/Poppins) font** via `next/font/google` — preload, no layout shift, CSS variable
+
+### UI Feedback
+
+- **[Sonner 2](https://sonner.emilkowal.ski/)** — toast notifications. Top-right, durasi 5s, expand mode untuk stack, rich colors
+
+### Tooling
+
+- **[Bun](https://bun.sh/)** — package manager, runtime untuk dev server lebih cepat dari npm
+- **ESLint 9** dengan `eslint-config-next` — termasuk `react-hooks/purity` (React Compiler ready)
+- **Turbopack** (default Next.js 16) — dev build cepat
+
+### Aksesibilitas
+
+- Native HTML semantics (`<button>`, `<dialog>`, `<table>`, `<th scope>`)
+- `aria-current="page"` di nav active
+- `aria-invalid`, `aria-pressed`, `aria-label` di mana relevan
+- Focus ring brand-tinted di semua interactive elements
+- Screen reader-friendly empty/error states (`aria-live`)
+
+### PWA & Branding
+
+- Favicon set lengkap (ico/svg/png/apple-touch) via `metadata.icons`
+- Web manifest dengan brand color `#3475E9` dan nama konsisten
+- Apple Web App tags (capable + status-bar style)
+
+### Backend Integration (sebagai dependency)
+
+- **Go (Fiber)** REST API di port 8001 dengan arsitektur hexagonal
+- JWT auth (HS256), argon2id password hashing
+- 7 modul: auth, buku (read-only), jenis_buku, penulis, penerbit, anggota, peminjaman, denda
+- Diperbaiki bug GORM (foreign key tag, BukuDetail relasi) selama integrasi
+
+---
+
+## Alur Data End-to-End
+
+Contoh: user submit form "Tambah Jenis Buku".
+
+```
+User klik "Simpan" di /jenis-buku/baru
+        ↓
+React Hook Form collects field values
+        ↓
+Zod validates → on success, panggil onSubmit
+        ↓
+useCreateJenisBuku().mutateAsync(payload)
+        ↓
+mutationFn → jenisBukuApi.create(payload)
+        ↓
+api.post('/admin/buku/jenbuk/create', payload)  ← axios instance
+        ↓
+Request interceptor attach Authorization header dari Zustand store
+        ↓
+Browser hit http://localhost:3000/api/v1/admin/buku/jenbuk/create
+        ↓
+Next.js rewrite → http://localhost:8001/api/v1/admin/buku/jenbuk/create
+        ↓
+Backend Go merespons
+        ↓
+Response interceptor normalize success/error
+        ↓
+onSuccess: queryClient.invalidateQueries(jenisBukuKeys.lists())
+onError: throw ApiError → caught di handleSubmit → toast.error(friendly)
+        ↓
+TanStack Query auto-refetch list, UI ter-update tanpa reload
+        ↓
+toast.success("Jenis buku berhasil ditambahkan.")
+        ↓
+router.push('/jenis-buku') → user kembali ke list dengan data baru
+```
+
+---
 
 ## Fitur
 
@@ -33,13 +281,15 @@ Sistem informasi perpustakaan modern berbasis Next.js. Memberi pegawai tampilan 
 
 **Aplikasi**
 - Otentikasi JWT dengan halaman login, route guard, dan logout
+- Show/hide password toggle di field login
 - Sidebar responsif (drawer di mobile)
 - Toast notifikasi untuk semua aksi
 - Search dengan debounce di setiap list page (250ms)
 - Pagination 10 baris per halaman
 - Empty / loading / error state yang konsisten di semua tabel
-- Show/hide password di field login
 - PWA-ready (favicon set lengkap + web manifest dengan brand color)
+
+---
 
 ## Struktur Proyek
 
@@ -97,6 +347,8 @@ providers/
 └── query-provider.tsx           # QueryClient + Toaster
 ```
 
+---
+
 ## Setup
 
 ### Prasyarat
@@ -132,6 +384,8 @@ Login dengan akun seed:
 - **Username**: `admin`
 - **Password**: `Perpus@2026`
 
+---
+
 ## Scripts
 
 | Perintah | Kegunaan |
@@ -141,6 +395,8 @@ Login dengan akun seed:
 | `bun start` | Jalankan hasil build |
 | `bun run lint` | ESLint |
 
+---
+
 ## Konvensi
 
 - **Naming**: kebab-case untuk file dan direktori, PascalCase untuk komponen
@@ -149,27 +405,20 @@ Login dengan akun seed:
 - **Form**: validasi dengan Zod, error inline per field, server error via toast
 - **TanStack Query**: cache key hierarkis (`[entity, list]`, `[entity, detail, id]`), invalidate setelah mutation
 - **Axios interceptor**: otomatis menempelkan `Authorization: Bearer <token>` dari Zustand store, dan clear session pada response 401
+- **Conventional Commits**: `feat:`, `fix:`, `chore:`, `refactor:`, `docs:`, dst. Subject ≤ 70 karakter, lowercase, imperative mood
 
-## Arsitektur
-
-**Pemisahan kepentingan**:
-- Server state (data dari backend) → TanStack Query, tidak pernah disimpan di Zustand
-- Client state (sesi auth, UI flag) → Zustand
-- Form state → React Hook Form
-
-**Pola umum** untuk halaman CRUD baru:
-
-1. Definisikan `types`, `api`, `queries`, `mutations`, `schema` di `features/<entity>/`
-2. Buat komponen `<entity>-form.tsx` (dipakai create + edit)
-3. Buat komponen `<entity>-list.tsx` yang memakai `DataTable`
-4. Buat 4 route: `/<entity>` (list), `/<entity>/baru` (create), `/<entity>/[id]/edit` (edit, server component yang `await params`), opsional `/<entity>/[id]` (detail)
+---
 
 ## Catatan Backend
 
 Beberapa keterbatasan backend yang ditangani di frontend:
+
 - Backend membalas `500` dengan SQL error mentah saat constraint foreign key ditolak. Frontend mendeteksi pesan `"foreign key constraint"` lalu menampilkan pesan ramah: *"Tidak bisa dihapus karena masih digunakan oleh data lain."*
 - Backend tidak punya endpoint create/update/delete untuk entitas `buku`, sehingga halaman buku bersifat read-only.
 - Beberapa endpoint membalas dengan key `status` alih-alih `msg`. Tipe response dibuat tolerant.
+- Bug GORM (typo `IDpeminjaman` vs `IDPeminjaman`, BukuDetail sebagai slice padahal belongs-to) diperbaiki di backend agar endpoint peminjaman & denda berfungsi.
+
+---
 
 ## Lisensi
 
