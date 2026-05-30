@@ -34,10 +34,6 @@ export default function LoginPage() {
 
           <LoginForm />
         </div>
-
-        <p className="mt-6 text-center text-xs text-slate-500">
-          Hanya untuk pegawai. Hubungi administrator untuk membuat akun baru.
-        </p>
       </div>
     </main>
   );
